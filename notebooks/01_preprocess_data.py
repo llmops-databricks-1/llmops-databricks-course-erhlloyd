@@ -4,10 +4,6 @@ STEP 01: Scrape the data from the website.
 """
 
 # COMMAND ----------
-import pandas as pd
-from bs4 import BeautifulSoup
-import requests
-import re
 
 # COMMAND ----------
 BASE_URL = "https://www.pilzsuchmaschine.de/123pilze"

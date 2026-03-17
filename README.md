@@ -30,7 +30,7 @@ The purpose of this project is to test LLMOps by building LLM pipelines.
 
 As the project develops, the workflow will be further refined to include more functionality and explore more advanced LLM usage in the pipeline e.g. use of agents. For now, we feature only a simple pipeline:
 1. scrape data and images from a (German-language) mushroom website
-2. process the data by creating a structured text-and-image dataset 
+2. process the data by creating a structured text-and-image dataset
 3. call an LLM to translate the text for the entries
 4. finally, give a (text-only) description of an unknown mushroom to an LLM and ask it to identify it.
 
