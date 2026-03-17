@@ -1,10 +1,11 @@
+"""
+Some inspection on the html output is needed in order to scrape it.
+In the future this might be extended to be more flexible (e.g. other website sources)
+"""
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-
-"""
-Some inspection on the html output is needed in order to scrape it.
-"""
 
 
 def scrape_mushroom_table(url: str) -> pd.DataFrame:
