@@ -32,10 +32,16 @@ dev = ["databricks-connect>=17.0, <18",
        "ipykernel>=6.29.5, <7",
        "pip>=25.0.1, <26",
        "pre-commit>=4.1.0, <5",
-       "claudetracing>=0.2.0, <1",]
+       "claudetracing>=0.2.0, <1",
+       "black>=24.0.0, <25",
+       "isort>=5.12.0, <6",
+       "autoflake>=2.1.0, <3"]
 
 ci = ["pre-commit>=4.1.0, <5",
-      "pytest>=8.3.4, <9"]
+      "pytest>=8.3.4, <9",
+      "black>=24.0.0, <25",
+      "isort>=5.12.0, <6",
+      "autoflake>=2.1.0, <3"]
 
 [tool.setuptools]
 include-package-data = true
@@ -61,6 +67,10 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 90
+exclude =[
+    "notebooks/",
+    "tests/"
+]
 
 select = [
     "F",    # pyflakes rules
@@ -88,3 +98,10 @@ ignore = [
 
 [tool.ruff.format]
 indent-style = "space"
+
+[tool.black]
+line-length = 90
+
+[tool.isort]
+profile = "black"
+line_length = 90

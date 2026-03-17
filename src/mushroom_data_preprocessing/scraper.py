@@ -7,7 +7,7 @@ Some inspection on the html output is needed in order to scrape it.
 """
 
 
-def scrape_mushroom_table(url):
+def scrape_mushroom_table(url: str) -> pd.DataFrame:
     base_url = url.split("/")[0]
 
     response = requests.get(url)
