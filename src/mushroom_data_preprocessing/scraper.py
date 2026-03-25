@@ -3,32 +3,32 @@ Some inspection on the html output is needed in order to scrape it.
 In the future this might be extended to be more flexible (e.g. other website sources)
 """
 
+import re
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from typing import Optional, Tuple
 from bs4.element import Tag
-from loguru import logger
-import re
 
 
 def retrieve_base_url(url: str) -> str:
     """
     Helper function to retrieve the base url component since this site
     makes quite a lot of use of relative links.
-    args: 
+    args:
         url: the url of the page we're currently looking at
     returns:
         base_url
     """
     return "/".join(url.split("/")[:-1])
 
+
 def scrape_mushroom_table(url: str) -> pd.DataFrame:
     """
     Scrapes the alphabetical index. Assumes a particular structure.
     args:
         url: url of the page
-    returns: 
+    returns:
         dataframe containing the alphabetical index data
     """
     base_url = retrieve_base_url(url)
@@ -83,16 +83,17 @@ def remove_non_ascii(string: str) -> str:
     """
     return string.encode("ascii", errors="ignore").decode()
 
+
 def remove_punctuation(string: str) -> str:
     """
     Helper function to remove any punctuation that was added.
     """
-    return re.sub(r'[^\w\s]', "", string)
+    return re.sub(r"[^\w\s]", "", string)
 
 
-def retrieve_name_and_edibility(list_soup: list[Tag]) -> Tuple[str, str]:
+def retrieve_name_and_edibility(list_soup: list[Tag]) -> tuple[str, str]:
     """
-    Given a list of <p> elems, extract the mushroom edibility status. With inspection, 
+    Given a list of <p> elems, extract the mushroom edibility status. With inspection,
     this can be found by searching for the linked edibility data page.
     args:
         list_soup: a list of bs4 parsed <p> objects from the original page
@@ -110,13 +111,16 @@ def retrieve_name_and_edibility(list_soup: list[Tag]) -> Tuple[str, str]:
             # this text section contains among other things edibility information
             # name, edibility = determine_name_and_edibility(text_section)
             split_text = soup.get_text().replace("\xa0", " ").split(" ")
-            index_edibility = [i for i, item in enumerate(split_text) if item.isupper()][0]
+            index_edibility = [i for i, item in enumerate(split_text) if item.isupper()][
+                0
+            ]
 
             edibility = remove_punctuation(split_text[index_edibility])
             name = " ".join(split_text[0:index_edibility]).strip()
             break
 
     return edibility, name
+
 
 def retrieve_characteristics_table(list_soup: list[Tag]) -> dict[str, str]:
     characteristics = {}
@@ -131,7 +135,7 @@ def retrieve_characteristics_table(list_soup: list[Tag]) -> dict[str, str]:
                 if len(cells) >= 2:
                     # first cell is the characteristic name
                     # second is the value
-                    # note that not all entries have the exact same set of characteristics here
+                    # not all entries have the exact same set of characteristics
                     # some mushrooms have more info than others
                     key = clean_text(cells[0].get_text()) or ""
                     value = clean_text(cells[1].get_text()) or ""
@@ -140,21 +144,25 @@ def retrieve_characteristics_table(list_soup: list[Tag]) -> dict[str, str]:
 
     return characteristics
 
+
 def clean_text(text: str) -> str:
     if not text:
-        return "" 
-    text = re.sub(r'\s+', ' ', text.strip())
-    text = text.rstrip(':')
+        return ""
+    text = re.sub(r"\s+", " ", text.strip())
+    text = text.rstrip(":")
     return text
+
 
 def extract_images(soup: BeautifulSoup) -> None:
     pass
 
 
-def scrape_individual_mushroom_page(url: str, base_url: Optional[str] = None) -> Tuple[dict, BeautifulSoup]:
+def scrape_individual_mushroom_page(
+    url: str, base_url: str | None = None
+) -> tuple[dict, BeautifulSoup]:
     """
     Scrapes an individual page with particular structure. Assumes a particular structure.
-    args: 
+    args:
         url: url of the page
         base_url: a base_url that can help us to resolve relative links
     returns:
@@ -171,7 +179,9 @@ def scrape_individual_mushroom_page(url: str, base_url: Optional[str] = None) ->
     all_tables = soup.find_all("table", class_="MsoNormalTable")
     metadata = {}
 
-    metadata["edibility"], metadata["name"] = retrieve_name_and_edibility(all_text_sections)
+    metadata["edibility"], metadata["name"] = retrieve_name_and_edibility(
+        all_text_sections
+    )
     metadata["characteristics"] = retrieve_characteristics_table(all_tables)
 
     return metadata, soup
@@ -179,4 +189,3 @@ def scrape_individual_mushroom_page(url: str, base_url: Optional[str] = None) ->
     # try:
     #     response = requests.get(url)
     #     soup = BeautifulSoup(response.content, 'html.parser')
-        
