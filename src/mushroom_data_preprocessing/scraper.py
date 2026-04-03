@@ -4,11 +4,13 @@ In the future this might be extended to be more flexible (e.g. other website sou
 """
 
 import re
+from urllib.parse import urljoin
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from loguru import logger
 
 
 def retrieve_base_url(url: str) -> str:
@@ -38,6 +40,8 @@ def scrape_mushroom_table(url: str) -> pd.DataFrame:
 
     soup = BeautifulSoup(html_content, "html.parser")
     table = soup.find("table", class_="MsoNormalTable")
+    if not table:
+        return pd.DataFrame({})
 
     data = []
     rows = table.find_all("tr")
@@ -98,7 +102,7 @@ def retrieve_name_and_edibility(list_soup: list[Tag]) -> tuple[str, str]:
     args:
         list_soup: a list of bs4 parsed <p> objects from the original page
     returns:
-        string edibility category for mushroom
+        string edibility category for mushroom (e.g. ESSBAR)
         string german name
     """
 
@@ -109,7 +113,6 @@ def retrieve_name_and_edibility(list_soup: list[Tag]) -> tuple[str, str]:
         # search for edibility link
         if soup.find_all("a", href="2006Essbarkeit.htm"):
             # this text section contains among other things edibility information
-            # name, edibility = determine_name_and_edibility(text_section)
             split_text = soup.get_text().replace("\xa0", " ").split(" ")
             index_edibility = [i for i, item in enumerate(split_text) if item.isupper()][
                 0
@@ -153,8 +156,78 @@ def clean_text(text: str) -> str:
     return text
 
 
-def extract_images(soup: BeautifulSoup) -> None:
-    pass
+def is_image_link(src_href: str) -> bool:
+    valid_extensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"]
+    return any(src_href.lower().endswith(ext) for ext in valid_extensions)
+
+
+def is_links_to_home(soup: BeautifulSoup) -> bool:
+    """Avoid scraping images which are buttons to home/forum/index."""
+    avoid = [
+        "https://www.123pilze.de/000Forum/index.php",
+        "https://www.123pilze.de/",
+        "https://www.123pilzsuche.de/",
+    ]
+    links = soup.find_all("a")
+    for link in links:
+        href = link.get("href")
+        if href in avoid:
+            return True
+    return False
+
+
+def contains_images(table_tag: Tag) -> bool:
+    return bool(table_tag.find("img"))
+
+
+def is_characteristics_table(table_tag: Tag) -> bool:
+    return bool(
+        table_tag.find("td", bgcolor="white") and "Eigenschaften" in table_tag.get_text()
+    )
+
+
+def retrieve_image_links(soup: BeautifulSoup, base_url: str) -> list[dict]:
+    """
+    Scrapes tables in the full page for images, since all images are
+    embedded in tables for this website.
+    args:
+        soup: the full html.parser content of the page
+        base_url: a base_url that can help us to resolve relative links
+    returns:
+        dictionary of image link data (not images themselves)
+    """
+    images = []
+    tables_grid = soup.find_all("table", class_="MsoTableGrid")
+    tables_normal = soup.find_all("table", class_="MsoNormalTable")
+    all_tables = tables_grid + tables_normal
+    logger.debug(f"collected num tables: {len(all_tables)}")
+    for table in all_tables:
+        if not (contains_images(table)) and is_characteristics_table(table):
+            continue
+
+        cells = table.find_all("td")
+        for cell in cells:
+            # find the image links first
+            image_links = cell.find_all("a")
+            for link in image_links:
+                relative_url = str(link.get("href"))
+                if relative_url and is_image_link(relative_url):
+                    # then we can scrape the data
+                    tag = link.find("img")
+                    if tag:
+                        src = str(tag.get("src"))
+                        if src:
+                            images.append(
+                                {
+                                    "link_url": urljoin(base_url, relative_url),
+                                    "thumbnail_url": urljoin(base_url, src),
+                                    "alt_text": tag.get("alt", ""),
+                                    "width": tag.get("width"),
+                                    "height": tag.get("height"),
+                                }
+                            )
+    logger.debug(f"returning num images metadata: {len(images)=})")
+    return images
 
 
 def scrape_individual_mushroom_page(
@@ -183,9 +256,6 @@ def scrape_individual_mushroom_page(
         all_text_sections
     )
     metadata["characteristics"] = retrieve_characteristics_table(all_tables)
+    metadata["images_links"] = retrieve_image_links(soup, base_url)
 
     return metadata, soup
-
-    # try:
-    #     response = requests.get(url)
-    #     soup = BeautifulSoup(response.content, 'html.parser')
