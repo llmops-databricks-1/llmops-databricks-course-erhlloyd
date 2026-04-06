@@ -135,7 +135,7 @@ class MushroomDataProcessingService:
 
     def process(self) -> None:
         logger.info("Processing scraping of dataset from website...")
-        self.process_retrieval()
+        self.process_retrieval(start_index=0, end_index=30)
         logger.info("Scraping completed! Processing upload to delta lake...")
         self.upload_to_delta_lake()
         logger.info("Upload completed!")
