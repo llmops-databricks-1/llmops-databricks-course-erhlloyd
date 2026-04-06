@@ -672,6 +672,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dynaconf"
+version = "3.2.13"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/57/0e/05927cf459e73f8bf9a9277cbea6f2d5b7db8a5cc9dc1e20e7a5fbac1b90/dynaconf-3.2.13.tar.gz", hash = "sha256:d79e0189d97b3f226b8ebb1717e2ce05d1a05cdf6ea05de66d24625fdb5a0cbd", size = 283507 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/43/11d6e5d2c00bf000b5329717c74563bf76a9193f4a41cb0c4ef277dde4fa/dynaconf-3.2.13-py2.py3-none-any.whl", hash = "sha256:4305527aef4834bdba3e39479b23c005186e83fb85f65bcaa4bcea58fa26759b", size = 238041 },
+]
+
+[[package]]
 name = "executing"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1491,6 +1500,7 @@ dependencies = [
     { name = "databricks-mcp" },
     { name = "databricks-sdk" },
     { name = "databricks-vectorsearch" },
+    { name = "dynaconf" },
     { name = "loguru" },
     { name = "mlflow" },
     { name = "nest-asyncio" },
@@ -1540,6 +1550,7 @@ requires-dist = [
     { name = "databricks-mcp", specifier = "==0.4.0" },
     { name = "databricks-sdk", specifier = "==0.85.0" },
     { name = "databricks-vectorsearch", specifier = "==0.63" },
+    { name = "dynaconf", specifier = "==3.2.13" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
     { name = "isort", marker = "extra == 'ci'", specifier = ">=5.12.0,<6" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.12.0,<6" },
