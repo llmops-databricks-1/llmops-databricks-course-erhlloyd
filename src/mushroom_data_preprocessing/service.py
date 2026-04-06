@@ -16,9 +16,9 @@ from databricks.connect import DatabricksSession
 from pyspark.sql import SparkSession
 from pyspark.sql.types import ArrayType, StringType, StructField, StructType
 
-from src.mushroom_data_preprocessing.config import settings
-from src.mushroom_data_preprocessing.constants import GERMAN_INDEX_SOURCE
-from src.mushroom_data_preprocessing.scraper import (
+from mushroom_data_preprocessing.config import settings
+from mushroom_data_preprocessing.constants import GERMAN_INDEX_SOURCE
+from mushroom_data_preprocessing.scraper import (
     retrieve_base_url,
     scrape_individual_mushroom_page,
     scrape_mushroom_table,
