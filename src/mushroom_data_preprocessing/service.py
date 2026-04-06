@@ -8,11 +8,10 @@ import os
 import time
 
 import pandas as pd
-from loguru import logger
 
-logger.add("inspect_service.log")
-
+# logger.add("inspect_service.log")
 from databricks.connect import DatabricksSession
+from loguru import logger
 from pyspark.sql import SparkSession
 from pyspark.sql.types import ArrayType, StringType, StructField, StructType
 
@@ -75,7 +74,7 @@ class MushroomDataProcessingService:
         logger.info(
             f"Completed! Metadata table contains records: {self.metadata_table.shape}"
         )
-        self.metadata_table.to_csv("all_2.csv")
+        # self.metadata_table.to_csv("all.csv")
 
     def _create_schema(self) -> StructType:
         nested_image_links = ArrayType(
