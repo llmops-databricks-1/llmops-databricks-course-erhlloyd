@@ -10,7 +10,7 @@ import time
 import pandas as pd
 from loguru import logger
 
-logger.add("inspect_service_2.log")
+logger.add("inspect_service.log")
 
 from databricks.connect import DatabricksSession
 from pyspark.sql import SparkSession

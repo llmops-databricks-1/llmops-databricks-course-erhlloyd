@@ -1,0 +1,23 @@
+resources:
+  jobs:
+    build_dataset_job:
+      name: build-dataset
+      tags:
+        project_name: "llmops-databricks-course-erhlloyd"
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "4"
+            dependencies:
+              - ../dist/*.whl
+
+      tasks:
+        - task_key: build_dataset
+          environment_key: default
+          notebook_task:
+            notebook_path: ../notebooks/01_create_dataset.py
+            base_parameters:
+              env: ${bundle.target}
+              git_sha: "${var.git_sha}"
+              run_id: "{{job.run_id}}"

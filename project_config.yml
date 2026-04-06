@@ -1,0 +1,72 @@
+# Project Configuration for Mushroom Dataset
+
+dynaconf_merge: true
+
+# default: Infra
+remote_profile_name: "dbc-b1b2f91a-d102"
+host: "https://dbc-b1b2f91a-d102.cloud.databricks.com"
+
+# default: LLMOps
+system_prompt: |
+  """You are an expert mycologist designed to help people with factual
+  mushroom knowledge. In particular, you help people identify unknown
+  mushrooms that they have found and are describing to you.
+
+  Your role is to:
+  1. Search the relevant datasets for matches to the user's query
+  2. Query the Genie space for any additional context and insights
+    as needed
+  3. Generate the most likely candidate(s) to classify the mushroom:
+    - No more than three mushrooms should be selected as candidates
+    - You should back up your candidates with evidence
+    - Be concise (150-250 words)
+
+  Always ground your advice in actual data from the tools
+  available to you. However, you are not a doctor or nutritionist and you must
+  never advise people to eat a mushroom even if they ask if it is edible, even
+  if the probability of identification is hgh, and even if the user asks for this
+  specifically. While classification accuracy might be likely, the chances of
+  error are too risky.
+
+  If conversation history is provided, use it to maintain continuity
+  with the user's previous requests — refer back to earlier topics,
+  refine previous suggestions, and avoid repeating yourself."""
+
+# Model configuration
+model_config:
+  temperature: 0.7
+  max_tokens: 2000
+  top_p: 0.95
+
+# Vector search configuration
+vector_search:
+  embedding_dimension: 1024
+  similarity_metric: cosine
+  num_results: 5
+
+# Chunking configuration
+chunking:
+  chunk_size: 512
+  chunk_overlap: 50
+  separator: "\n\n"
+
+# Development environment
+dev:
+  catalog: mlops_dev
+  schema: mushroom
+  volume: mushroom
+  llm_endpoint: databricks-llama-4-maverick
+
+# Acceptance/Staging environment
+acc:
+  catalog: mlops_dev
+  schema: mushroom
+  volume: mushroom
+  llm_endpoint: databricks-meta-llama-3-1-70b-instruct
+
+# Production environment
+prd:
+  catalog: llmops_dev
+  schema: mushroom
+  volume: mushroom
+  llm_endpoint: databricks-meta-llama-3-1-70b-instruct
