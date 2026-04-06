@@ -114,6 +114,7 @@ def retrieve_name_and_edibility(list_soup: list[Tag]) -> tuple[str, str]:
         if soup.find_all("a", href="2006Essbarkeit.htm"):
             # this text section contains among other things edibility information
             split_text = soup.get_text().replace("\xa0", " ").split(" ")
+            split_text = explode_list_at_space(split_text)
             index_edibility = [i for i, item in enumerate(split_text) if item.isupper()][
                 0
             ]
@@ -141,11 +142,22 @@ def retrieve_characteristics_table(list_soup: list[Tag]) -> dict[str, str]:
                     # not all entries have the exact same set of characteristics
                     # some mushrooms have more info than others
                     key = clean_text(cells[0].get_text()) or ""
+                    key = remove_punctuation(key.replace(" ", "_"))
                     value = clean_text(cells[1].get_text()) or ""
                     characteristics[key] = value
             break
-
     return characteristics
+
+
+def explode_list_at_space(input_list: list[str]) -> list[str]:
+    extended_list = []
+    for segments in input_list:
+        if segments:
+            words = segments.split()
+            extended_list.extend(words)
+        else:
+            extended_list.append("")
+    return extended_list
 
 
 def clean_text(text: str) -> str:
