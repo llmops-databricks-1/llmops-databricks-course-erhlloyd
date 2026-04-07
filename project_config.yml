@@ -53,20 +53,20 @@ chunking:
 # Development environment
 dev:
   catalog: mlops_dev
-  schema: mushroom
+  schema: erhlloyd
   volume: mushroom
-  llm_endpoint: databricks-llama-4-maverick
+  llm_endpoint: databricks-claude-sonnet-4-6
 
 # Acceptance/Staging environment
 acc:
   catalog: mlops_dev
-  schema: mushroom
+  schema: erhlloyd
   volume: mushroom
   llm_endpoint: databricks-meta-llama-3-1-70b-instruct
 
 # Production environment
 prd:
   catalog: llmops_dev
-  schema: mushroom
+  schema: erhlloyd
   volume: mushroom
   llm_endpoint: databricks-meta-llama-3-1-70b-instruct
