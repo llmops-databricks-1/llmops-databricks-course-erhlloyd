@@ -6,7 +6,7 @@ requires-python = ">=3.12, <3.13"
 dependencies = [
     "cffi==1.17.1",
     "cloudpickle==3.1.1",
-    "numpy==2.4.0",
+    "numpy==2.4.1",
     "pandas==2.3.0",
     "pyarrow==22.0.0",
     "databricks-sdk==0.85.0",
@@ -23,7 +23,9 @@ dependencies = [
     "databricks-agents==1.8.2",
     "psycopg==3.3.2",
     "psycopg-pool==3.3.0",
-    "psycopg[binary]==3.3.2"
+    "psycopg[binary]==3.3.2",
+    "beautifulsoup4==4.14.3",
+    "dynaconf==3.2.13"
 ]
 
 [project.optional-dependencies]
@@ -31,16 +33,22 @@ dev = ["databricks-connect>=17.0, <18",
        "ipykernel>=6.29.5, <7",
        "pip>=25.0.1, <26",
        "pre-commit>=4.1.0, <5",
-       "claudetracing>=0.2.0, <1",]
+       "claudetracing>=0.2.0, <1",
+       "black>=24.0.0, <25",
+       "isort>=5.12.0, <6",
+       "autoflake>=2.1.0, <3"]
 
 ci = ["pre-commit>=4.1.0, <5",
-      "pytest>=8.3.4, <9"]
+      "pytest>=8.3.4, <9",
+      "black>=24.0.0, <25",
+      "isort>=5.12.0, <6",
+      "autoflake>=2.1.0, <3"]
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"your_custom_package" = ["../../../project_config.yml"]
+"mushroom_data_preprocessing" = ["../../../project_config.yml"]
 
 [build-system]
 requires = ["setuptools>=72.0"]
@@ -48,7 +56,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["your_custom_package*"]
+include = ["mushroom_data_preprocessing*"]
 
 [tool.setuptools.dynamic]
 version = { file = "version.txt" }
@@ -60,6 +68,10 @@ pythonpath = ["."]
 
 [tool.ruff]
 line-length = 90
+exclude =[
+    "notebooks/",
+    "tests/"
+]
 
 select = [
     "F",    # pyflakes rules
@@ -87,3 +99,10 @@ ignore = [
 
 [tool.ruff.format]
 indent-style = "space"
+
+[tool.black]
+line-length = 90
+
+[tool.isort]
+profile = "black"
+line_length = 90
